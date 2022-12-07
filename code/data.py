@@ -79,15 +79,20 @@ log_udf = functions.udf(log_transform, returnType=types.DoubleType())
 
 def main(photoPath, osm):
     
-    
+    """
     #gets lat and long coords of photo
     imgCoords = image_coordinates(photoPath)
     if (not imgCoords):
         print("Error")
         return
+    """
+
     
     #load up vancouver data and store relevant info into variables
     allVanData = spark.read.json(osm, schema= amenity_schema)
+    burnabyCoords = spark.read.json('burnaby_coords.txt')
+    burnabyCoords.show()
+
     allVanData = allVanData.select('lat', 'lon', 'amenity')
     allVanData = allVanData.cache()
 
@@ -106,7 +111,7 @@ def main(photoPath, osm):
     amenitiesVanData = np.array(allVanData.select('amenity').collect())
 
     
-
+    """
     X_train, X_valid, y_train, y_valid = train_test_split(coordsVanData, amenitiesVanData)
     model = make_pipeline(
         KNeighborsClassifier(n_neighbors=3)
@@ -116,6 +121,7 @@ def main(photoPath, osm):
     print(model.score(X_valid, y_valid))
     X_test = np.array([imgCoords])
     print(model.predict(X_test))
+    """
 
     """
     plt.figure(figsize=(15, 6))
@@ -124,6 +130,7 @@ def main(photoPath, osm):
     plt.savefig('filtered_output.png')
     plt.close()
     """
+
     
 if __name__ == '__main__':
     imagePath = sys.argv[1]
