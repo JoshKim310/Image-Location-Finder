@@ -1,5 +1,10 @@
+from ctypes import sizeof
 import sys
-
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
 from sqlalchemy import null
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
@@ -11,6 +16,7 @@ spark.conf.set("spark.sql.session.timeZone", "UTC")
 from PIL import Image as PILimg
 from PIL.ExifTags import TAGS
 from exif import Image
+
 
 
 #Schema for the data we were given about greater Vancouver (Prof Baker provided)
@@ -48,21 +54,43 @@ def image_coordinates(img_path):
         else:
             print("The image has no EXIF information")
             return
-        print(f"Was taken: {img.datetime_original}, and has coordinates:{coords}")
+        print("Was taken:", img.datetime_original,"and has coordinates:",coords)
         return coords
 
 
-def main(photoPath):
+
+
+def main(photoPath, osm):
     
+    #gets lat and long coords of photo
     imgCoords = image_coordinates(photoPath)
     if (not imgCoords):
         print("Error")
         return
+    
+    #load up vancouver data received in project webpage
+    allVanData = spark.read.json(osm, schema= amenity_schema)
+    coordsVanData = np.array(allVanData.select('lat', 'lon').collect())
+    amenitiesVanData = np.array(allVanData.select('amenity').collect())
+    X_train, X_valid, y_train, y_valid = train_test_split(coordsVanData, amenitiesVanData)
+    model = KNeighborsClassifier(n_neighbors=5)
+    model.fit(X_train, y_train.ravel())
+    print(model.score(X_train, y_train))
+    print(model.score(X_valid, y_valid))
+    X_test = np.array([imgCoords])
+    print(X_test)
+    print(model.predict(X_test))
+    
+        
+    
+
+    
 
 
 
 
 
 if __name__ == '__main__':
-    inputs = sys.argv[1]
-    main(inputs)
+    imagePath = sys.argv[1]
+    osmData = sys.argv[2]
+    main(imagePath, osmData)
