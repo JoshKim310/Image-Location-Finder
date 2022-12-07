@@ -117,13 +117,6 @@ def main(photoPath, osm):
     X_test = np.array([imgCoords])
     print(model.predict(X_test))
 
-    
-    
-
-    
-    
-
-    
     """
     plt.figure(figsize=(15, 6))
     plt.plot(X, Y, '.b', alpha = 0.5)
@@ -132,18 +125,6 @@ def main(photoPath, osm):
     plt.close()
     """
     
-    
-    
-    
-        
-    
-
-    
-
-
-
-
-
 if __name__ == '__main__':
     imagePath = sys.argv[1]
     osmData = sys.argv[2]
