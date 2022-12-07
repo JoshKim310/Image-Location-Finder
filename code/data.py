@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sqlalchemy import null
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
@@ -13,9 +14,16 @@ assert spark.version >= '2.4' # make sure we have Spark 2.4+
 spark.sparkContext.setLogLevel('WARN')
 sc = spark.sparkContext
 spark.conf.set("spark.sql.session.timeZone", "UTC")
+import matplotlib.pyplot as plt
+from pyspark.sql import SparkSession, functions, types
+import math
+
+
+#Libraries not used in class
 from PIL import Image as PILimg
 from PIL.ExifTags import TAGS
 from exif import Image
+
 
 
 
@@ -31,6 +39,7 @@ amenity_schema = types.StructType([
 
 #Converts the coords into decimal coordinates
 def decimal_coords(coords, ref):
+
     decimal_degrees = coords[0] + coords[1] / 60 + coords[2] / 3600
     if (ref == "S" or ref == "W"):
         decimal_degrees = -decimal_degrees
@@ -59,8 +68,17 @@ def image_coordinates(img_path):
 
 
 
+def log_transform(input):
+    if (input < 0):
+        temp = math.log(-input)
+        return -temp
+    else:
+        return math.log(input)
+
+log_udf = functions.udf(log_transform, returnType=types.DoubleType())
 
 def main(photoPath, osm):
+    
     
     #gets lat and long coords of photo
     imgCoords = image_coordinates(photoPath)
@@ -68,18 +86,54 @@ def main(photoPath, osm):
         print("Error")
         return
     
-    #load up vancouver data received in project webpage
+    #load up vancouver data and store relevant info into variables
     allVanData = spark.read.json(osm, schema= amenity_schema)
+    allVanData = allVanData.select('lat', 'lon', 'amenity')
+    allVanData = allVanData.cache()
+
+    
+
+    amenityType = allVanData.groupBy('amenity').count()
+    amenityType = amenityType.sort(amenityType['count'].desc())
+    amenityType = amenityType.withColumnRenamed('count', 'rarity')
+    amenityType = amenityType.coalesce(1)
+    amenityType = amenityType.cache()
+    
+    allVanData = allVanData.join(amenityType, ['amenity'])
+
+    
     coordsVanData = np.array(allVanData.select('lat', 'lon').collect())
     amenitiesVanData = np.array(allVanData.select('amenity').collect())
+
+    
+
     X_train, X_valid, y_train, y_valid = train_test_split(coordsVanData, amenitiesVanData)
-    model = KNeighborsClassifier(n_neighbors=5)
-    model.fit(X_train, y_train.ravel())
+    model = make_pipeline(
+        KNeighborsClassifier(n_neighbors=3)
+        )
+    model.fit(X_train, y_train)
     print(model.score(X_train, y_train))
     print(model.score(X_valid, y_valid))
     X_test = np.array([imgCoords])
-    print(X_test)
     print(model.predict(X_test))
+
+    
+    
+
+    
+    
+
+    
+    """
+    plt.figure(figsize=(15, 6))
+    plt.plot(X, Y, '.b', alpha = 0.5)
+    plt.plot(imgCoords[0], imgCoords[1], '.r' ,alpha = 0.8)
+    plt.savefig('filtered_output.png')
+    plt.close()
+    """
+    
+    
+    
     
         
     
