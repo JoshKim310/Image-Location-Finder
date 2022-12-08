@@ -26,18 +26,24 @@ def main(osmData):
     print(count.first()['count'])
     cities = []
     lat = np.array(filtered.select('lat').collect())
-    lon = np.array(filtered.select('lon').collect())
+    lon = np.array(filtered.select('lon').collect())  
 
+
+    
     for i in range(count.first()['count']):
         url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat[i][0]}&lon={lon[i][0]}&format=json&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
         cities.append(requests.get(url).json()['results'][0]['city'])
     
+
     panda_df = pd.DataFrame(cities, columns=['cities'])
+    panda_df['lat'] = lat
+    panda_df['lon'] = lon
+    print(panda_df)
     df_cities = spark.createDataFrame(panda_df)
 
-    addCity = filtered.withColumn('cities', df_cities['cities'])
+    addCity = filtered.join(df_cities, ['lat', 'lon'])
     
-    addCity.show()
+    addCity.write.csv('school_data', mode = 'overwrite')
 
 
 if __name__ == '__main__':
