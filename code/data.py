@@ -1,4 +1,6 @@
+from calendar import c
 from ctypes import sizeof
+from fileinput import filename
 import sys
 import numpy as np
 import pandas as pd
@@ -138,11 +140,63 @@ def main(photoPath, osm):
 
     filteredData = filteredData.join(gatheredData, ['lat', 'lon', 'amenity'])
 
+    cityData = filteredData.groupBy('city').count()
+    cityData = cityData.withColumnRenamed("count", "popularity")
+    filteredData = filteredData.join(cityData, ['city'])
+    cityData = filteredData.filter(filteredData['popularity'] > 20)
+
+    cityVancouver = cityData.filter(cityData['city'] == 'Vancouver')
+    citySurrey = cityData.filter(cityData['city'] == 'Surrey')
+    cityBurnaby = cityData.filter(cityData['city'] == 'Burnaby')
+    cityAbbotsford = cityData.filter(cityData['city'] == 'Abbotsford')
+    cityRichmond = cityData.filter(cityData['city'] == 'Richmond')
+    cityDelta = cityData.filter(cityData['city'] == 'Delta')
+    cityCoquitlam = cityData.filter(cityData['city'] == 'Coquitlam')
+    cityLangley = cityData.filter(cityData['city'] == 'Township of Langley')
+    cityNewWest = cityData.filter(cityData['city'] == 'New Westminster')
+    cityWestVan = cityData.filter(cityData['city'] == 'West Vancouver')
+    cityNorthVan = cityData.filter(cityData['city'] == 'District of North Vancouver')
+    tempData = cityData.filter(cityData['city'] == 'North Vancouver')
+    cityNorthVan = cityNorthVan.union(tempData)
+    cityPoco = cityData.filter(cityData['city'] == 'Port Coquitlam')
+    cityPomo = cityData.filter(cityData['city'] == 'Port Moody')
+    cityRidge = cityData.filter(cityData['city'] == 'Maple Ridge')
+    cityMission = cityData.filter(cityData['city'] == 'Mission')
+    tempData = cityData.filter(cityData['city'] == 'City of Langley')
+    cityLangley = cityLangley.union(tempData)
+    cityAreaA = cityData.filter(cityData['city'] == 'Electoral Area A')
+    cityWhiteRock = cityData.filter(cityData['city'] == 'White Rock')
+
+
+    cityArray = [cityVancouver, citySurrey, cityBurnaby, cityAbbotsford, cityRichmond, cityDelta, cityCoquitlam, cityLangley,cityNewWest, cityWestVan,cityNorthVan,
+    cityPoco, cityPomo, cityRidge, cityMission, cityAreaA, cityWhiteRock]
+
+    colours = ['blue', 'red', 'green', 'magenta', 'orange', 'yellow', 'gray', 'brown', 'cyan', 'darkslategray', 'tan', 'olive', 'peru', 'teal', 'pink', 'indigo', 'lightcoral']
+    plt.figure(figsize=(15, 6))
+    plt.title('Map of amenities')
+    plt.xlabel('Latitude')
+    plt.ylabel('Longitude')
+    globals_dict = locals()
+
+    counter = 0
+    for i in cityArray:
+        X = np.array(i.select('lat').collect())
+        Y = np.array(i.select('lon').collect())
+        filename = variable_name(i, globals_dict)
+        print(filename[0],"is now being plotted on graph")
+        plt.scatter(X, Y, c=colours[counter], label=filename[0])
+        counter+=1
+    plt.scatter(49.263, -122.748, c = 'black')
+    plt.legend(loc="upper right")
+    plt.savefig('map_of_amenities.png')
+    plt.close()
+
+
+    
+    """
     coordsVanData = np.array(filteredData.select('lat', 'lon').collect())
     cityVanData = np.array(filteredData.select('city').collect())
 
-    
-    
     X_train, X_valid, y_train, y_valid = train_test_split(coordsVanData, cityVanData)
     model = make_pipeline(
         KNeighborsClassifier(n_neighbors=9)
@@ -152,7 +206,8 @@ def main(photoPath, osm):
     print(model.score(X_valid, y_valid))
     X_test = np.array([[49.2790, -122.7976]])
     print(model.predict(X_test))
-    globals_dict = locals()
+    
+    """
 
 
     """
