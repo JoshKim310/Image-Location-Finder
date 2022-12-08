@@ -77,12 +77,19 @@ def image_coordinates(img_path):
 
 def amenity_filter(amenity):
     
-    if (amenity == 'atm' or amenity == 'bank'or amenity == 'college' or amenity == 'ferry_terminal' or amenity == 'library' or amenity == 'police' or amenity == 'pub' or amenity == 'school' or amenity == 'theatre'):
+    if (amenity == 'atm' or amenity == 'bank'or amenity == 'college' or amenity == 'ferry_terminal' or amenity == 'library' or amenity == 'police' 
+    or amenity == 'pub' or amenity == 'school' or amenity == 'theatre' or amenity == 'dentist' or amenity == 'fast_food' or amenity == 'parking'
+    or amenity  == 'pharmacy'):
         return True
     else:
         return False
 
 amenity_udf = functions.udf(amenity_filter, returnType=types.BooleanType())
+
+
+def variable_name(name, globals_dict):
+    
+    return [var_name for var_name in globals_dict if globals_dict[var_name] is name]
 
 def main(photoPath, osm):
     
@@ -119,8 +126,15 @@ def main(photoPath, osm):
     pubData = spark.read.csv('pub_data', schema=data_schema)
     schoolData = spark.read.csv('school_data', schema=data_schema)
     theatreData = spark.read.csv('theatre_data', schema=data_schema)
+    dentistData = spark.read.csv('dentist_data', schema = data_schema)
+    fastFoodData = spark.read.csv('fast_food_data', schema = data_schema)
+    parkingData = spark.read.csv('parking_data', schema = data_schema)
+    pharmacyData = spark.read.csv('pharmacy_data', schema = data_schema)
+
+    arrayOfData = [atmData, bankData, collegeData, ferryData, libraryData, policeData, pubData, schoolData, theatreData, dentistData, fastFoodData, parkingData, pharmacyData]
     
-    gatheredData = atmData.union(bankData).union(collegeData).union(ferryData).union(libraryData).union(policeData).union(pubData).union(schoolData).union(theatreData)
+    gatheredData = atmData.union(bankData).union(collegeData).union(ferryData).union(libraryData).union(policeData).union(pubData)\
+    .union(schoolData).union(theatreData).union(dentistData).union(fastFoodData).union(parkingData).union(pharmacyData)
 
     filteredData = filteredData.join(gatheredData, ['lat', 'lon', 'amenity'])
 
@@ -138,18 +152,25 @@ def main(photoPath, osm):
     print(model.score(X_valid, y_valid))
     X_test = np.array([[49.2790, -122.7976]])
     print(model.predict(X_test))
-
+    globals_dict = locals()
 
 
     """
-    X = np.array(allVanData.select('lat').collect())
-    Y = np.array(allVanData.select('lon').collect())
-    plt.figure(figsize=(15, 6))
-    plt.scatter(X, Y, color = 'blue', s = 30)
-    plt.scatter(imgCoords[0], imgCoords[1], color="red", s = 40)
-    plt.savefig('output.png')
-    plt.close()
+    for i in arrayOfData:
+        X = np.array(i.select('lat').collect())
+        Y = np.array(i.select('lon').collect())
+        plt.figure(figsize=(15, 6))
+        fileName = variable_name(i, globals_dict)
+        print(fileName[0],"is now saving as image")
+        plt.title(fileName[0])
+        plt.xlabel("Latitude")
+        plt.ylabel("Longitude")
+        plt.scatter(X, Y, color = 'blue', s = 30)
+        plt.savefig(fileName[0]+".png")
+        plt.close()
     """
+
+    
     
 
     
