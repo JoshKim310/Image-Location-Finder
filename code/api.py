@@ -1,4 +1,4 @@
-from aiohttp import request
+from http import request
 import requests
 from requests.structures import CaseInsensitiveDict
 
