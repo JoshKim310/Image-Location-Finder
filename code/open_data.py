@@ -20,6 +20,3 @@ import math
 
 import json
 
-
-file = spark.read.json('test.json')
-file.show()
