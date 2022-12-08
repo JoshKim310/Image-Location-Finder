@@ -48,8 +48,19 @@ def create_csv(osmData, amenity, output):
 
 def main(osmData):
     #create_csv(osmData, 'bank', 'bank_data')
-    create_csv(osmData, 'school', 'school_data')
-
+    #create_csv(osmData, 'school', 'school_data')
+    #create_csv(osmData, 'parking', 'parking_data')**
+    #create_csv(osmData, 'atm', 'atm_data')
+    #create_csv(osmData, 'pub', 'pub_data')
+    #create_csv(osmData, 'library', 'library_data')
+    #create_csv(osmData, 'theatre', 'theatre_data')
+    #create_csv(osmData, 'college', 'college_data')
+    #create_csv(osmData, 'police', 'police_data')
+    #create_csv(osmData, 'ferry_terminal', 'ferry_terminal_data')
+    #create_csv(osmData, 'dentist', 'dentist_data')**
+    #create_csv(osmData, 'pharmacy', 'pharmacy_data')**
+    return
+    
 if __name__ == '__main__':
     spark = SparkSession.builder.appName('The data').getOrCreate()
     assert spark.version >= '3.2' # make sure we have Spark 2.4+
