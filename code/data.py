@@ -84,18 +84,15 @@ def main(photoPath, osm):
 
     allVanData = allVanData.select('lat', 'lon', 'amenity')
     allVanData = allVanData.cache()
-
-    
-
     amenityType = allVanData.groupBy('amenity').count()
     amenityType = amenityType.sort(amenityType['count'].desc())
     amenityType = amenityType.withColumnRenamed('count', 'rarity')
     amenityType = amenityType.coalesce(1)
     amenityType = amenityType.cache()
-    
     allVanData = allVanData.join(amenityType, ['amenity'])
+    filteredVanData = allVanData.filter(allVanData['amenity'] == 'bank')
 
-    
+    filteredVanData.show()
     coordsVanData = np.array(allVanData.select('lat', 'lon').collect())
     amenitiesVanData = np.array(allVanData.select('amenity').collect())
 
