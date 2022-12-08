@@ -1,6 +1,8 @@
 import sys
 import requests
 import json
+import pandas as pd
+import numpy as np
 from pyspark.sql import SparkSession, functions, types, Row
 
 
@@ -22,15 +24,18 @@ def main(osmData):
     # get count of schools
     count = filtered.groupBy('amenity').count()
     print(count.first()['count'])
-    school = ['asfd' , 'asdf', 'as']
+    cities = []
+    lat = np.array(filtered.select('lat').collect())
+    lon = np.array(filtered.select('lon').collect())
 
-    #for i in range(count.first()['count']):
-    #    url = "https://api.geoapify.com/v1/geocode/reverse?lat=49.3451932&lon=-123.1497994&format=json&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
-    #    school[i] = requests.get(url).json()['results'][0]['city']
+    for i in range(count.first()['count']):
+        url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat[i][0]}&lon={lon[i][0]}&format=json&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
+        cities.append(requests.get(url).json()['results'][0]['city'])
     
-    df_cities = spark.createDataFrame(data=school, schema=['cities'])
-    df_cities.show();return
-    addCity = filtered.withColumn('city', functions.column('school'))
+    panda_df = pd.DataFrame(cities, columns=['cities'])
+    df_cities = spark.createDataFrame(panda_df)
+
+    addCity = filtered.withColumn('cities', df_cities['cities'])
     
     addCity.show()
 
