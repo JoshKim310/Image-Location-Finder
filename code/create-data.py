@@ -31,15 +31,19 @@ def create_csv(osmData, amenity, output):
 
     
     for i in range(count.first()['count']):
-        url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat[i][0]}&lon={lon[i][0]}&format=json&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
-        cities.append(requests.get(url).json()['results'][0]['city'])
-    
+        url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat[i][0]}&lon={lon[i][0]}&format=json&apiKey=c056a8e1d0a54563b44e0f75e2f8c920"
+        req = requests.get(url).json()['results'][0].get('city', 'uknown')
+        if(req != 'uknown'):
+            cities.append(req)
+        else:
+            cities.append(req)
 
     panda_df = pd.DataFrame(cities, columns=['cities'])
     panda_df['lat'] = lat
     panda_df['lon'] = lon
     print(panda_df)
     df_cities = spark.createDataFrame(panda_df)
+    df_cities = df_cities.filter(df_cities['cities'] != 'uknown')
 
     addCity = filtered.join(df_cities, ['lat', 'lon'])
 
@@ -49,7 +53,7 @@ def create_csv(osmData, amenity, output):
 def main(osmData):
     #create_csv(osmData, 'bank', 'bank_data')
     #create_csv(osmData, 'school', 'school_data')
-    #create_csv(osmData, 'parking', 'parking_data')**
+    #create_csv(osmData, 'parking', 'parking_data')
     #create_csv(osmData, 'atm', 'atm_data')
     #create_csv(osmData, 'pub', 'pub_data')
     #create_csv(osmData, 'library', 'library_data')
@@ -57,8 +61,9 @@ def main(osmData):
     #create_csv(osmData, 'college', 'college_data')
     #create_csv(osmData, 'police', 'police_data')
     #create_csv(osmData, 'ferry_terminal', 'ferry_terminal_data')
-    #create_csv(osmData, 'dentist', 'dentist_data')**
-    #create_csv(osmData, 'pharmacy', 'pharmacy_data')**
+    #create_csv(osmData, 'dentist', 'dentist_data')
+    #create_csv(osmData, 'pharmacy', 'pharmacy_data')
+    create_csv(osmData, 'fast_food', 'fast_food_data')
     return
     
 if __name__ == '__main__':
