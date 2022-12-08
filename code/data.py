@@ -68,15 +68,6 @@ def image_coordinates(img_path):
 
 
 
-def log_transform(input):
-    if (input < 0):
-        temp = math.log(-input)
-        return -temp
-    else:
-        return math.log(input)
-
-log_udf = functions.udf(log_transform, returnType=types.DoubleType())
-
 def main(photoPath, osm):
     
 
@@ -121,6 +112,8 @@ def main(photoPath, osm):
     print(model.predict(X_test))
     """
 
+
+    """
     X = np.array(allVanData.select('lat').collect())
     Y = np.array(allVanData.select('lon').collect())
     plt.figure(figsize=(15, 6))
@@ -128,6 +121,7 @@ def main(photoPath, osm):
     plt.scatter(imgCoords[0], imgCoords[1], color="red", s = 40)
     plt.savefig('output.png')
     plt.close()
+    """
     
 
     
