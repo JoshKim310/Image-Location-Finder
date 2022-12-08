@@ -15,13 +15,13 @@ amenity_schema = types.StructType([
     types.StructField('tags', types.MapType(types.StringType(), types.StringType()), nullable=False),
 ])
 
-def main(osmData):
+def create_csv(osmData, amenity, output):
     vanData = spark.read.json(osmData, schema=amenity_schema)
      
     selected = vanData.select('lat', 'lon', 'amenity')
-    filtered = selected.filter(selected['amenity'] == 'school')
+    filtered = selected.filter(selected['amenity'] == amenity)
 
-    # get count of schools
+    # get count of amenity
     count = filtered.groupBy('amenity').count()
     print(count.first()['count'])
     cities = []
@@ -42,9 +42,13 @@ def main(osmData):
     df_cities = spark.createDataFrame(panda_df)
 
     addCity = filtered.join(df_cities, ['lat', 'lon'])
-    
-    addCity.write.csv('school_data', mode = 'overwrite')
 
+    addCity = addCity.coalesce(1)
+    addCity.write.csv(output, mode = 'overwrite')
+
+def main(osmData):
+    #create_csv(osmData, 'bank', 'bank_data')
+    create_csv(osmData, 'school', 'school_data')
 
 if __name__ == '__main__':
     spark = SparkSession.builder.appName('The data').getOrCreate()
