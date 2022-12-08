@@ -38,22 +38,20 @@ def image_coordinates(img_path):
         print("Was taken:", img.datetime_original,"and has coordinates:",coords)
         return coords
 
+base = "https://api.geoapify.com/v1/geocode/reverse?lat=49.219983&lon=-122.988481&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
 
-#Turns parameters lat and lon into a url that we can use for api *WHAT WE NEED*
+
+
 base_url = "https://api.geoapify.com/v1/geocode/reverse?lat=&lon=&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
-def get_url(lat, lon):
-    coord_url = base_url[:48] + str(lat) +base_url[48] + base_url[49:53] + str(lon) + base_url[53:]
-    return coord_url
-#gets lat and long coords of photo
+
+    #gets lat and long coords of photo
 imgCoords = image_coordinates('IMG_8590.jpg')
 if (not imgCoords):
     print("Error")
+
 lat = str(imgCoords[0])
 lon = str(imgCoords[1])
-coord_url = base_url[:48] + lat +base_url[48] + base_url[49:53] + lon + base_url[53:]
-#*WHAT WE NEED*
 
-"""
-resp = requests.get(coord_url)
-print(resp.content)
-"""
+coord_url = base_url[:48] + lat +base_url[48] + base_url[49:53] + lon + base_url[53:]
+print(coord_url)
+

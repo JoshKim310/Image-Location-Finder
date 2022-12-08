@@ -79,19 +79,17 @@ log_udf = functions.udf(log_transform, returnType=types.DoubleType())
 
 def main(photoPath, osm):
     
-    """
+
     #gets lat and long coords of photo
     imgCoords = image_coordinates(photoPath)
     if (not imgCoords):
         print("Error")
         return
-    """
+
 
     
     #load up vancouver data and store relevant info into variables
     allVanData = spark.read.json(osm, schema= amenity_schema)
-    burnabyCoords = spark.read.json('burnaby_coords.txt')
-    burnabyCoords.show()
 
     allVanData = allVanData.select('lat', 'lon', 'amenity')
     allVanData = allVanData.cache()
@@ -123,13 +121,14 @@ def main(photoPath, osm):
     print(model.predict(X_test))
     """
 
-    """
+    X = np.array(allVanData.select('lat').collect())
+    Y = np.array(allVanData.select('lon').collect())
     plt.figure(figsize=(15, 6))
-    plt.plot(X, Y, '.b', alpha = 0.5)
-    plt.plot(imgCoords[0], imgCoords[1], '.r' ,alpha = 0.8)
-    plt.savefig('filtered_output.png')
+    plt.scatter(X, Y, color = 'blue', s = 30)
+    plt.scatter(imgCoords[0], imgCoords[1], color="red", s = 40)
+    plt.savefig('output.png')
     plt.close()
-    """
+    
 
     
 if __name__ == '__main__':
