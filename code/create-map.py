@@ -20,6 +20,8 @@ def heat_map(map, df):
         
 
 def main(mapData):
+    ''' Find these generated maps in the generated-maps directory'''
+    # read csv file that contains lat, lon, amenity type, and city data of a particular amenity
     df = pd.read_csv(mapData, names=['latitude', 'longitude', 'amenity', 'city'])
     map = folium.Map(location=[49.19, -122.7], tiles="OpenStreetMap", zoom_start=11)
     

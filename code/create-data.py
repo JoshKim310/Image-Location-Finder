@@ -1,9 +1,8 @@
 import sys
 import requests
-import json
 import pandas as pd
 import numpy as np
-from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql import SparkSession, types
 
 
 amenity_schema = types.StructType([
@@ -15,6 +14,8 @@ amenity_schema = types.StructType([
     types.StructField('tags', types.MapType(types.StringType(), types.StringType()), nullable=False),
 ])
 
+
+# function creates a csv file with lat, lon, amenity name, and corresponding city requested by api
 def create_csv(osmData, amenity, output):
     vanData = spark.read.json(osmData, schema=amenity_schema)
      
@@ -28,12 +29,13 @@ def create_csv(osmData, amenity, output):
     lat = np.array(filtered.select('lat').collect())
     lon = np.array(filtered.select('lon').collect())  
 
-
     
     for i in range(count.first()['count']):
         url = f"https://api.geoapify.com/v1/geocode/reverse?lat={lat[i][0]}&lon={lon[i][0]}&format=json&apiKey=c056a8e1d0a54563b44e0f75e2f8c920"
-        req = requests.get(url).json()['results'][0].get('city', 'uknown')
-        if(req != 'uknown'):
+        req = requests.get(url).json()['results'][0].get('city', 'unknown')
+
+        # if returned json object has no key:'city', append with city name 'unknown'
+        if(req != 'unknown'):
             cities.append(req)
         else:
             cities.append(req)
@@ -43,14 +45,18 @@ def create_csv(osmData, amenity, output):
     panda_df['lon'] = lon
     print(panda_df)
     df_cities = spark.createDataFrame(panda_df)
-    df_cities = df_cities.filter(df_cities['cities'] != 'uknown')
+
+    # filter all cities with name 'unknown
+    df_cities = df_cities.filter(df_cities['cities'] != 'unknown')
 
     addCity = filtered.join(df_cities, ['lat', 'lon'])
 
     addCity = addCity.coalesce(1)
     addCity.write.csv(output, mode = 'overwrite')
 
+
 def main(osmData):
+    ''' Find these generated csv's in the generated-data directory'''
     #create_csv(osmData, 'bank', 'bank_data')
     #create_csv(osmData, 'school', 'school_data')
     #create_csv(osmData, 'parking', 'parking_data')
@@ -66,9 +72,10 @@ def main(osmData):
     create_csv(osmData, 'fast_food', 'fast_food_data')
     return
     
+
 if __name__ == '__main__':
     spark = SparkSession.builder.appName('The data').getOrCreate()
-    assert spark.version >= '3.2' # make sure we have Spark 2.4+
+    assert spark.version >= '3.2' # make sure we have Spark 3.2+
     spark.sparkContext.setLogLevel('WARN')
 
     osmData = sys.argv[1]

@@ -1,13 +1,7 @@
-from http import request
-import requests
-from requests.structures import CaseInsensitiveDict
-
 #Libraries not used in class
-from PIL import Image as PILimg
-from PIL.ExifTags import TAGS
 from exif import Image
 from sqlalchemy import null
-
+import requests
 
 
 #Converts the coords into decimal coordinates
@@ -38,9 +32,8 @@ def image_coordinates(img_path):
             return
         print("Was taken:", img.datetime_original,"and has coordinates:",coords)
         return coords
-
+'''
 base = "https://api.geoapify.com/v1/geocode/reverse?lat=49.219983&lon=-122.988481&type=city&format=json&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
-
 
 
 base_url = "https://api.geoapify.com/v1/geocode/reverse?lat=&lon=&apiKey=afd572b5a5414cc58c98b25e8ce47fb7"
@@ -57,4 +50,6 @@ coord_url = base_url[:48] + lat +base_url[48] + base_url[49:53] + lon + base_url
 
 
 resp = requests.get(base)
+
+'''
 
