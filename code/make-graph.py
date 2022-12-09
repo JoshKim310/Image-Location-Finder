@@ -4,10 +4,6 @@ from fileinput import filename
 import sys
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
 from sqlalchemy import false, null, true
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
@@ -21,43 +17,17 @@ from pyspark.sql import SparkSession, functions, types
 import math
 
 
-#Libraries not used in class
-from PIL import Image as PILimg
-from PIL.ExifTags import TAGS
-from exif import Image
-
-
-
-
-#Schema for the data we were given about greater Vancouver (Prof Baker provided)
-amenity_schema = types.StructType([
-    types.StructField('lat', types.DoubleType(), nullable=False),
-    types.StructField('lon', types.DoubleType(), nullable=False),
-    types.StructField('timestamp', types.TimestampType(), nullable=False),
-    types.StructField('amenity', types.StringType(), nullable=False),
-    types.StructField('name', types.StringType(), nullable=True),
-    types.StructField('tags', types.MapType(types.StringType(), types.StringType()), nullable=False),
-])
 
 #Schema for the different amenity data
 data_schema = types.StructType([
-    types.StructField('lat', types.DoubleType(), nullable = False),
-    types.StructField('lon', types.DoubleType(), nullable = False),
+    types.StructField('lat', types.DoubleType(), nullable=False),
+    types.StructField('lon', types.DoubleType(), nullable=False),
+    types.StructField('city', types.StringType(), nullable = False),
+    types.StructField('rarity', types.IntegerType(), nullable = False),
     types.StructField('amenity', types.StringType(), nullable=False),
-    types.StructField('city', types.StringType(), nullable=False),
+    types.StructField('popularity', types.IntegerType(), nullable=False),
 ])
 
-
-def amenity_filter(amenity):
-    
-    if (amenity == 'atm' or amenity == 'bank'or amenity == 'college' or amenity == 'ferry_terminal' or amenity == 'library' or amenity == 'police' 
-    or amenity == 'pub' or amenity == 'school' or amenity == 'theatre' or amenity == 'dentist' or amenity == 'fast_food' or amenity == 'parking'
-    or amenity  == 'pharmacy'):
-        return True
-    else:
-        return False
-
-amenity_udf = functions.udf(amenity_filter, returnType=types.BooleanType())
 
 
 def variable_name(name, globals_dict):
@@ -69,45 +39,28 @@ def main(osm):
 
     
     #load up vancouver data and store relevant info into variables
-    allVanData = spark.read.json(osm, schema= amenity_schema)
-
-    allVanData = allVanData.select('lat', 'lon', 'amenity')
-    allVanData = allVanData.cache()
-    amenityType = allVanData.groupBy('amenity').count()
-    amenityType = amenityType.sort(amenityType['count'].desc())
-    amenityType = amenityType.withColumnRenamed('count', 'rarity')
-    amenityType = amenityType.coalesce(1)
-    amenityType = amenityType.cache()
-    allVanData = allVanData.join(amenityType, ['amenity'])
-    allVanData = allVanData.withColumn("filter", amenity_udf(allVanData['amenity']))
-    filteredData = allVanData.filter(allVanData['filter'] == True)
+    allVanData = spark.read.csv(osm, schema=data_schema )
 
 
-    atmData = spark.read.csv('atm_data', schema=data_schema)
-    bankData = spark.read.csv('bank_data', schema=data_schema)
-    collegeData = spark.read.csv('college_data', schema=data_schema)
-    ferryData = spark.read.csv('ferry_terminal_data', schema=data_schema)
-    libraryData = spark.read.csv('library_data', schema=data_schema)
-    policeData = spark.read.csv('police_data', schema=data_schema)
-    pubData = spark.read.csv('pub_data', schema=data_schema)
-    schoolData = spark.read.csv('school_data', schema=data_schema)
-    theatreData = spark.read.csv('theatre_data', schema=data_schema)
-    dentistData = spark.read.csv('dentist_data', schema = data_schema)
-    fastFoodData = spark.read.csv('fast_food_data', schema = data_schema)
-    parkingData = spark.read.csv('parking_data', schema = data_schema)
-    pharmacyData = spark.read.csv('pharmacy_data', schema = data_schema)
+
+    atmData = allVanData.filter(allVanData['amenity'] == 'atm')
+    bankData = allVanData.filter(allVanData['amenity'] == 'bank')
+    collegeData = allVanData.filter(allVanData['amenity'] == 'college')
+    ferryData = allVanData.filter(allVanData['amenity'] == 'ferry_terminal')
+    libraryData = allVanData.filter(allVanData['amenity'] == 'library')
+    policeData = allVanData.filter(allVanData['amenity'] == 'police')
+    pubData = allVanData.filter(allVanData['amenity'] == 'pub')
+    schoolData = allVanData.filter(allVanData['amenity'] == 'school')
+    theatreData = allVanData.filter(allVanData['amenity'] == 'theatre')
+    dentistData = allVanData.filter(allVanData['amenity'] == 'dentist')
+    fastFoodData = allVanData.filter(allVanData['amenity'] == 'fast_food')
+    parkingData = allVanData.filter(allVanData['amenity'] == 'parking')
+    pharmacyData = allVanData.filter(allVanData['amenity'] == 'pharmacy')
 
     arrayOfData = [atmData, bankData, collegeData, ferryData, libraryData, policeData, pubData, schoolData, theatreData, dentistData, fastFoodData, parkingData, pharmacyData]
     
-    gatheredData = atmData.union(bankData).union(collegeData).union(ferryData).union(libraryData).union(policeData).union(pubData)\
-    .union(schoolData).union(theatreData).union(dentistData).union(fastFoodData).union(parkingData).union(pharmacyData)
-
-    filteredData = filteredData.join(gatheredData, ['lat', 'lon', 'amenity'])
-
-    cityData = filteredData.groupBy('city').count()
-    cityData = cityData.withColumnRenamed("count", "popularity")
-    filteredData = filteredData.join(cityData, ['city'])
-    cityData = filteredData.filter(filteredData['popularity'] > 20)
+    
+    cityData = allVanData.filter(allVanData['popularity'] > 20)
 
     cityVancouver = cityData.filter(cityData['city'] == 'Vancouver')
     citySurrey = cityData.filter(cityData['city'] == 'Surrey')
