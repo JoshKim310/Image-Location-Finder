@@ -1,12 +1,7 @@
-from calendar import c
 import sys
-import numpy as np
-import pandas as pd
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
 from sqlalchemy import false, null, true
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
-from pyspark.sql import SparkSession, functions, types, Row
+from pyspark.sql import SparkSession, functions, types
 spark = SparkSession.builder.appName('The data').getOrCreate()
 assert spark.version >= '2.4' # make sure we have Spark 2.4+
 spark.sparkContext.setLogLevel('WARN')
