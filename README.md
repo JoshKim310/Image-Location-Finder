@@ -41,36 +41,36 @@ argument 3: `amenity name appended by _data`
 <details>
     <summary>List of amenity names:</summary>
     <p>
-        ferry_terminal  
-        trolley_bay  
-        prep_school  
-        college  
-        bureau_de_change  
-        police  
-        bicycle_repair_station  
-        vacuum_cleaner  
-        clock  
-        music_school  
-        social_centre  
-        compressed_air  
-        bus_station  
-        fire_station  
-        marketplace  
-        motorcycle_parking  
-        taxi  
+        ferry_terminal <br>
+        trolley_bay  <br>
+        prep_school  <br>
+        college  <br>
+        bureau_de_change  <br>
+        police  <br>
+        bicycle_repair_station  <br>
+        vacuum_cleaner  <br>
+        clock  <br>
+        music_school  <br>
+        social_centre  <br>
+        compressed_air  <br>
+        bus_station  <br>
+        fire_station  <br>
+        marketplace  <br>
+        motorcycle_parking  <br>
+        taxi  <br>
         food_court  
-        parking_space  
-        nightclub  
-        shower  
-        arts_centre  
-        bbq  
-        events_venue  
-        boat_rental  
-        cinema  
-        research_institute  
-        university  
-        loading_dock  
-        weighbridge  
+        parking_space  <br>
+        nightclub  <br>
+        shower  <br>
+        arts_centre  <br>
+        bbq  <br>
+        events_venue  <br>
+        boat_rental  <br>
+        cinema  <br>
+        research_institute  <br>
+        university  <br>
+        loading_dock  <br>
+        weighbridge  <br>
     </p>
 </details>
 
@@ -122,12 +122,25 @@ The `create-map.py` takes 1 command line input argument which is:
 argument 1: `csv from generated-data`
 
 Example command for `create-map.py`:  
-for windows:  
+For windows:  
 ```
 python create-map.py .\generated-data\bank_data\part-00000-0133636f-dfa8-40a0-9c43-4ce07c07c1bd-c000.csv
 ```
 
-for mac:  
+For mac:  
 ```
 python create-map.py ./generated-data/bank_data/part-00000-0133636f-dfa8-40a0-9c43-4ce07c07c1bd-c000.csv
 ```
+
+### `make-graph.py`
+
+The `make-graph.py` creates a scatter plot of all the generated data points created in the `generated-data` directory.
+
+The `make-graph.py` takes 1 command input argument which is:  
+argument 1: `amenities-vancouver.csv`
+
+Example command for `make-graph.py`:  
+```
+spark-submit make-graph.py amenities-vancouver.csv
+```
+
