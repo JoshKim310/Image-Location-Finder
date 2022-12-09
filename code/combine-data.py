@@ -12,6 +12,7 @@ from pyspark.sql import SparkSession, functions, types
 
 
 
+
 #Schema for the data we were given about greater Vancouver (Prof Baker provided)
 amenity_schema = types.StructType([
     types.StructField('lat', types.DoubleType(), nullable=False),
@@ -50,6 +51,7 @@ def main(osm):
     
     #load up vancouver data and store relevant info into variables
     allVanData = spark.read.json(osm, schema= amenity_schema)
+
 
     allVanData = allVanData.select('lat', 'lon', 'amenity')
     allVanData = allVanData.cache()

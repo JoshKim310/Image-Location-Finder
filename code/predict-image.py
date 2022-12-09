@@ -1,8 +1,11 @@
 import sys
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.pipeline import make_pipeline
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sqlalchemy import null
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
@@ -77,14 +80,23 @@ def main(photoPath, osm):
     cityVanData = np.array(allVanData.select('city').collect())
 
     X_train, X_valid, y_train, y_valid = train_test_split(coordsVanData, cityVanData)
-    model = make_pipeline(
-        KNeighborsClassifier(n_neighbors=9)
-        )
-    model.fit(X_train, y_train.ravel())
-    print(model.score(X_train, y_train))
-    print(model.score(X_valid, y_valid))
-    X_test = np.array([imgCoords])
-    print(model.predict(X_test))
+    X_input = np.array([imgCoords])
+
+    model_best = VotingClassifier([
+        ('NaiveBayes', GaussianNB()),
+        ('KNeighbors', KNeighborsClassifier()),
+        ('DecisionTree', DecisionTreeClassifier()),
+        ('RandomForest', RandomForestClassifier()),
+        ('MLP', MLPClassifier()),
+    ])
+
+    model_best.fit(X_train, y_train.ravel())
+    print("Training data score:",model_best.score(X_train, y_train))
+    print("Valid data score:",model_best.score(X_valid, y_valid))
+    print("Predicted city:",model_best.predict(X_input)[0])
+
+
+
     
     
     
