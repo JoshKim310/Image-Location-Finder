@@ -1,6 +1,3 @@
-from calendar import c
-from ctypes import sizeof
-from fileinput import filename
 import sys
 import numpy as np
 import pandas as pd
@@ -14,7 +11,6 @@ sc = spark.sparkContext
 spark.conf.set("spark.sql.session.timeZone", "UTC")
 import matplotlib.pyplot as plt
 from pyspark.sql import SparkSession, functions, types
-import math
 
 
 

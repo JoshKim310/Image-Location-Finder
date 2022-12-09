@@ -12,7 +12,6 @@ assert spark.version >= '2.4' # make sure we have Spark 2.4+
 spark.sparkContext.setLogLevel('WARN')
 sc = spark.sparkContext
 spark.conf.set("spark.sql.session.timeZone", "UTC")
-import matplotlib.pyplot as plt
 from pyspark.sql import SparkSession, functions, types
 
 
