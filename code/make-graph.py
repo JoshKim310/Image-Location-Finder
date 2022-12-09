@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-import pandas as pd
 from sqlalchemy import false, null, true
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
