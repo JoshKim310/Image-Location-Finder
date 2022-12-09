@@ -7,7 +7,13 @@ Description
 * [Installation](#installation)
 * [Usage](#usage)
   * [Generating the Data](#generating-the-data)
+    * [create-data.py](#create-datapy)
+    * [combine-data.py](#combine-datapy)
   * [Running the Analysis](#running-the-analysis)
+    * [predict-image.py](#predict-imagepy)
+  * [Generating Visualizations](#generating-visualizations)
+    * [create-map.py](#create-mappy)
+    * [make-graph.py](#make-graphpy)
 
 
 ## Installation
@@ -20,7 +26,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Generating the Data
+### [Generating the Data]()
 
 ** **Note: Pre generated data is in the `generated-data` directory** **  
 
@@ -89,7 +95,7 @@ spark-submit combine-data.py amenities-vancouver.csv
 
 ---
 
-### Running the Analysis
+### [Running the Analysis]()
 
 There are ` ` scripts that generate our analyses: `predict-image.py`.  
 
@@ -110,7 +116,7 @@ spark-submit predict-image.py IMG_8590.jpg amenities-vancouver.csv
 
 ---
 
-### Generating Visualizations
+### [Generating Visualizations]()
 
 There are `2` scripts that generate visuals: `create-map.py` and `make-graph.py`
 
