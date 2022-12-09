@@ -193,7 +193,6 @@ def main(photoPath, osm):
 
 
     
-    """
     coordsVanData = np.array(filteredData.select('lat', 'lon').collect())
     cityVanData = np.array(filteredData.select('city').collect())
 
@@ -207,10 +206,6 @@ def main(photoPath, osm):
     X_test = np.array([[49.2790, -122.7976]])
     print(model.predict(X_test))
     
-    """
-
-
-    """
     for i in arrayOfData:
         X = np.array(i.select('lat').collect())
         Y = np.array(i.select('lon').collect())
@@ -223,7 +218,7 @@ def main(photoPath, osm):
         plt.scatter(X, Y, color = 'blue', s = 30)
         plt.savefig(fileName[0]+".png")
         plt.close()
-    """
+
 
     
     

@@ -84,7 +84,7 @@ def main(photoPath, osm):
     model = make_pipeline(
         KNeighborsClassifier(n_neighbors=9)
         )
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train.ravel())
     print(model.score(X_train, y_train))
     print(model.score(X_valid, y_valid))
     X_test = np.array([imgCoords])
