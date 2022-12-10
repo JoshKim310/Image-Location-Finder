@@ -91,32 +91,30 @@ spark-submit create-data.py police police_data
 #### Output
 
 Outputs a directory with given dir name and csv file in the form:  
-latitude | longitude | amenity | city  
---- | --- | --- | ---
+`latitude | longitude | amenity | city`
 
 ### `combine-data.py`
 
 #### Input
 
 The `combine-data.py` takes 1 command line input arguments:  
-argument 1: `amenities-vancouver.csv`
+argument 1: `amenities-vancouver.json.gz`
 
 Example command for `combine-data.py`:  
 ```
-spark-submit combine-data.py amenities-vancouver.csv
+spark-submit combine-data.py amenities-vancouver.json.gz
 ```
 
 #### Output
 
 Outputs `amenities-vancouver.csv` in the form:  
-latitude | longitude | city | count | amenity  
---- | --- | --- | --- | ---
+`latitude | longitude | city | count | amenity`
 
 ---
 
 ### [Running the Analysis](#running-the-analysis)
 
-There are ` ` scripts that generate our analyses: `predict-image.py`.  
+There is `1` script that generate our analysis: `predict-image.py`.  
 
 ### `predict-image.py`
 
@@ -133,11 +131,11 @@ argument 2: `amenities-vancouver.csv`
 Example command for `predict-image.py`:  
 For windows:
 ```
-spark-submit predict-image.py .\sample-images\IMG_8590.jpg amenities-vancouver.csv
+spark-submit predict-image.py .\sample-images\IMG_2991.jpg amenities-vancouver.csv
 ```
 For mac:
 ```
-spark-submit predict-image.py ./sample-images/IMG_8590.jpg amenities-vancouver.csv
+spark-submit predict-image.py ./sample-images/IMG_2991.jpg amenities-vancouver.csv
 ```
 
 #### Output

@@ -55,7 +55,7 @@ def create_csv(osmData, amenity, output):
     addCity.write.csv(output, mode = 'overwrite')
 
 
-def main(osmData):
+def main(osmData, amenity, amenity_dir):
     ''' Find these generated csv's in the generated-data directory'''
     #create_csv(osmData, 'bank', 'bank_data')
     #create_csv(osmData, 'school', 'school_data')
@@ -69,7 +69,7 @@ def main(osmData):
     #create_csv(osmData, 'ferry_terminal', 'ferry_terminal_data')
     #create_csv(osmData, 'dentist', 'dentist_data')
     #create_csv(osmData, 'pharmacy', 'pharmacy_data')
-    create_csv(osmData, 'fast_food', 'fast_food_data')
+    create_csv(osmData, amenity, amenity_dir)
     return
     
 
