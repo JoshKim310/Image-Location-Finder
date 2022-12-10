@@ -84,8 +84,13 @@ argument 3: `amenity name appended by _data(output dir name)`
 
 
 Example command for `create-data.py`:  
+For windows:  
 ```
-spark-submit create-data.py police police_data
+spark-submit create-data.py amenities-vancouver.json.gz police .\generated_data\police_data
+```
+For mac: 
+```
+spark-submit create-data.py amenities-vancouver.json.gz police ./generated_data/police_data
 ```
 
 #### Output

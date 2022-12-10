@@ -79,4 +79,6 @@ if __name__ == '__main__':
     spark.sparkContext.setLogLevel('WARN')
 
     osmData = sys.argv[1]
-    main(osmData)
+    amenity = sys.argv[2]
+    amenity_dir = sys.argv[3]
+    main(osmData, amenity, amenity_dir)
