@@ -31,6 +31,7 @@ data_schema = types.StructType([
     types.StructField('popularity', types.IntegerType(), nullable=False),
 ])
 
+#https://medium.com/spatial-data-science/how-to-extract-gps-coordinates-from-images-in-python-e66e542af354
 #Converts the coords into decimal coordinates
 def decimal_coords(coords, ref):
 
@@ -38,8 +39,6 @@ def decimal_coords(coords, ref):
     if (ref == "S" or ref == "W"):
         decimal_degrees = -decimal_degrees
     return decimal_degrees
-
-
 #Get the coordinates of the image by passing through the image path
 def image_coordinates(img_path):
     coords = null
