@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-### [Generating the Data]()
+### [Generating the Data](#generating-the-data)
 
 ** **Note: Pre generated data is in the `generated-data` directory** **  
 
@@ -37,12 +37,14 @@ There are `two` scripts that generate our data:`create-data.py` and `data.py`.
 
 ### `create-data.py`
 
-The `create-data.py` takes 3 command line input argument which are:  
+#### Input
+
+The `create-data.py` takes 3 command line input arguments:  
 argument 1: `amenities-vancouver.json.gz`  
 argument 2: `amenity name from list below`  
-argument 3: `amenity name appended by _data`
+argument 3: `amenity name appended by _data(output dir name)`
 
-** **Note: These amenities have a count from 10-37 and is recommended to run these amenities for testing. (Amenities with a high count will increase the `create-data.py` execution time due to the increase in api calls. Full list of amenities are in ``)** **
+** **Note: These amenities have a count from 10-37 and is recommended to run these amenities for testing. (Amenities with a high count will increase the `create-data.py` execution time due to the increase in api calls. Full list of amenities and their counts are in `amenity_count` directory.)** **
 
 <details>
     <summary>List of amenity names:</summary>
@@ -86,37 +88,67 @@ Example command for `create-data.py`:
 spark-submit create-data.py police police_data
 ```
 
+#### Output
+
+Outputs a directory with given dir name and csv file in the form:  
+latitude | longitude | amenity | city  
+--- | --- | --- | ---
+
 ### `combine-data.py`
+
+#### Input
+
+The `combine-data.py` takes 1 command line input arguments:  
+argument 1: `amenities-vancouver.csv`
 
 Example command for `combine-data.py`:  
 ```
 spark-submit combine-data.py amenities-vancouver.csv
 ```
 
+#### Output
+
+Outputs `amenities-vancouver.csv` in the form:  
+latitude | longitude | city | count | amenity  
+--- | --- | --- | --- | ---
+
 ---
 
-### [Running the Analysis]()
+### [Running the Analysis](#running-the-analysis)
 
 There are ` ` scripts that generate our analyses: `predict-image.py`.  
 
 ### `predict-image.py`
 
-The `predict-image.py` file takes in an image as input and predicts where the image was taken.
+The `predict-image.py` file takes in an image as input and predicts where the image was taken.  
 
-The `predict-image.py` takes 2 command line input arguments which are:  
+#### Input
+
+The `predict-image.py` takes 2 command line input arguments:  
 argument 1: `.jpg file`  
 argument 2: `amenities-vancouver.csv`  
 
 ** **Note: sample input images can be found in the `sample-images` directory** **
 
-Example command for `predict-image.py`:
+Example command for `predict-image.py`:  
+For windows:
 ```
-spark-submit predict-image.py IMG_8590.jpg amenities-vancouver.csv
+spark-submit predict-image.py .\sample-images\IMG_8590.jpg amenities-vancouver.csv
 ```
+For mac:
+```
+spark-submit predict-image.py ./sample-images/IMG_8590.jpg amenities-vancouver.csv
+```
+
+#### Output
+Outputs the following to the console:  
+`time iamge was taken`, `lat/lon`, `training score`, `validation score`, `predicted city`
 
 ---
 
-### [Generating Visualizations]()
+### [Generating Visualizations](#generating-visualizations)
+
+** **Note: Pre generated visualizations can be found in the `visualizations` directory** **
 
 There are `2` scripts that generate visuals: `create-map.py` and `make-graph.py`
 
@@ -124,7 +156,9 @@ There are `2` scripts that generate visuals: `create-map.py` and `make-graph.py`
 
 The `create-map.py` plots points on a map giving a visual of the distribution of the amenities.
 
-The `create-map.py` takes 1 command line input argument which is:  
+#### Input
+
+The `create-map.py` takes 1 command line input argument:  
 argument 1: `csv from generated-data`
 
 Example command for `create-map.py`:  
@@ -138,11 +172,16 @@ For mac:
 python create-map.py ./generated-data/bank_data/part-00000-0133636f-dfa8-40a0-9c43-4ce07c07c1bd-c000.csv
 ```
 
+#### Output
+Outputs and `index.html` file which can be opened with a browser to see map.
+
 ### `make-graph.py`
 
 The `make-graph.py` creates a scatter plot of all the generated data points created in the `generated-data` directory.
 
-The `make-graph.py` takes 1 command input argument which is:  
+#### Input
+
+The `make-graph.py` takes 1 command input argument:  
 argument 1: `amenities-vancouver.csv`
 
 Example command for `make-graph.py`:  
@@ -150,3 +189,6 @@ Example command for `make-graph.py`:
 spark-submit make-graph.py amenities-vancouver.csv
 ```
 
+#### Output
+Outputs `map_of_amenities.png` which is scatter plot of all amenities in each color coded city.
+Outputs `*.png` which is a scatter plot of all the amenities in `amenities-vancouver.csv` .
