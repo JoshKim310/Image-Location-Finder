@@ -171,7 +171,7 @@ python create-map.py ./generated-data/bank_data/part-00000-0133636f-dfa8-40a0-9c
 ```
 
 #### Output
-Outputs and `index.html` file which can be opened with a browser to see map.
+Outputs a `heat_map.html` and `marker_map.html` file which can be opened with a browser to see the map.
 
 ### `make-graph.py`
 
