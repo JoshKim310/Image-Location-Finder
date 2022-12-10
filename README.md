@@ -99,11 +99,11 @@ latitude | longitude | amenity | city
 #### Input
 
 The `combine-data.py` takes 1 command line input arguments:  
-argument 1: `amenities-vancouver.csv`
+argument 1: `amenities-vancouver.json.gz`
 
 Example command for `combine-data.py`:  
 ```
-spark-submit combine-data.py amenities-vancouver.csv
+spark-submit combine-data.py amenities-vancouver.json.gz
 ```
 
 #### Output
