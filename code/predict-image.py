@@ -97,6 +97,7 @@ def main(photoPath, osm):
 
 
 
+
     
     
     
